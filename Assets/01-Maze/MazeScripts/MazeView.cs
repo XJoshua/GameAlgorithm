@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
+//using System.Diagnostics;
 using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UI;
@@ -31,8 +31,13 @@ public class MazeView : MonoBehaviour
 
     private MazeCreator creator;
 
+    public Point StartPoint;
+    public Point EndPoint;
+
     void Start()
     {
+        ColorCells = new Color[Width, Height];
+
         creator = new MazeCreator(Width, Height);
 
         CellImage = new Image[Width, Height];
@@ -73,9 +78,13 @@ public class MazeView : MonoBehaviour
     {
         StartCreate();
 
+        ReadImage();
+
+        FoundStartAndEnd();
+
         StartCoroutine(creator.CreatMazeWithAnima(ShowMaze));
 
-        finder = new MazePathFinder(creator.cells, ShowCheckedCell, ShowPath);
+        finder = new MazePathFinder(creator, ShowCheckedCell, ShowPath);
 
         //FinishCreate();
     }
@@ -180,6 +189,7 @@ public class MazeView : MonoBehaviour
         }
         temp.SetNativeSize();
         temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
+        temp.color = ColorCells[point.x, point.y];
     }
 
     private void StartCreate()
@@ -247,7 +257,7 @@ public class MazeView : MonoBehaviour
             item.Value.color = new Color(0, 0, 0, 0);
         }
 
-        Point temp = new Point(Width - 1, Height - 1);
+        Point temp = creator.EndPoint;
 
         CellMarks[temp].color = Color.red;
 
@@ -277,6 +287,69 @@ public class MazeView : MonoBehaviour
         }
     }
 
+    public Texture2D ReferImage;
+
+    public bool[,] UsableCells;
+    public Color[,] ColorCells;
+
+    /// <summary>
+    /// 读取图片设置迷宫节点
+    /// </summary>
+    public void ReadImage()
+    {
+        UsableCells = new bool[Width, Height];
+        creator.UseCells = new bool[Width, Height];
+
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                int tempW = (int)(i * ReferImage.width / Width);
+                int tempH = (int)(j * ReferImage.height / Height);
+                //Debug.Log(tempW + " | " + tempH);
+                Color temp = ReferImage.GetPixel(tempW, tempH);
+                
+                if (temp.a >= 0.1) creator.UseCells[i, j] = true;
+                ColorCells[i,j] = temp;
+
+                CellImage[i, j].color = temp;
+
+                //Debug.Log(string.Format("({0},{1}|{2}|{3})",i, j, creator.UseCells[i, j], temp));
+
+            }
+        }
+    }
+
+    public void FoundStartAndEnd()
+    {
+        bool getStartPoint = false;
+        for (int i = 0; i < Width; i++)
+        {
+            if (getStartPoint) break;
+            for (int j = 0; j < Height; j++)
+            {
+                if (!creator.UseCells[i, j]) continue;
+                creator.StartPoint = new Point(i, j);
+                getStartPoint = true;
+                break;
+            }
+        }
+
+        bool getEndPoint = false;
+        for (int i = Width - 1; i > 0; i--)
+        {
+            if (getEndPoint) break;
+            for (int j = Height - 1; j > 0; j--)
+            {
+                if (!creator.UseCells[i, j]) continue;
+                creator.EndPoint = new Point(i, j);
+                getEndPoint = true;
+                break;
+            }
+        }
+
+        Debug.Log("StartPos: " + creator.StartPoint + " | EndPos: " + creator.EndPoint);
+    }
 }
 
 public enum WallType

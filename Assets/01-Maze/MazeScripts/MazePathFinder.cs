@@ -22,7 +22,7 @@ public class MazePathFinder
 
     //private bool[,] searchPointMarks;
 
-    private readonly Point startPoint = new Point(0, 0);
+    private readonly Point startPoint;
 
     private readonly Point endPoint;
 
@@ -30,14 +30,17 @@ public class MazePathFinder
 
     public FindAlgo FindAlgo;
 
-    public MazePathFinder(Cell[,] cells, Action<Point> cellAction = null, Action finishAction = null)
-    {
-        this.cells = cells;
+    public MazeCreator creator;
 
-        endPoint = new Point(cells.GetLength(0) - 1, cells.GetLength(1) - 1);
+    public MazePathFinder(MazeCreator creator, Action<Point> cellAction = null, Action finishAction = null)
+    {
+        this.cells = creator.cells;
 
         searchPoints4Bfs = new Queue<Point>();
         searchPoints4Dfs = new Stack<Point>();
+
+        startPoint = creator.StartPoint;
+        endPoint = creator.EndPoint;
 
         CheckCells = cellAction;
         FinishFinding = finishAction;
@@ -53,6 +56,7 @@ public class MazePathFinder
         searchPoints4Bfs = new Queue<Point>();
 
         curPoint = startPoint;
+        //endPoint = new Point(cells.GetLength(0) - 1, cells.GetLength(1) - 1);
 
         if (CheckCells != null) CheckCells(curPoint);
 
@@ -76,7 +80,7 @@ public class MazePathFinder
 
             if (CheckCells != null) CheckCells(curPoint);
 
-            Debug.Log(curPoint);
+            //Debug.Log(curPoint);
 
             yield return null;
         }
@@ -104,7 +108,7 @@ public class MazePathFinder
 
             if (CheckCells != null) CheckCells(curPoint);
 
-            Debug.Log(curPoint);
+            //Debug.Log(curPoint);
 
             yield return null;
         }

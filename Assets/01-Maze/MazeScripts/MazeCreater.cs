@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using JetBrains.Annotations;
+using Mono.Cecil;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
@@ -121,6 +122,7 @@ public class MazeCreator
 {
     public int Height;
     public int Width;
+    public bool[,] UseCells;
     // 所有的格子
     public Cell[,] cells;
     // 标记矩阵
@@ -132,14 +134,20 @@ public class MazeCreator
 
     public Action<Cell, Point> SetLinkAct;
 
+    // 开始位置和结束位置
+    public Point StartPoint;
+
+    public Point EndPoint;
+
     public MazeCreator(int x, int y)
     {
         this.Height = y;
         this.Width = x;
+        //this.UseCells = useCells;
     }
 
     /// <summary>
-    /// 开始创建迷宫
+    /// 开始创建迷宫 Old
     /// </summary>
     public void CreatMaze(Action<Cell[,]> args = null)
     {
@@ -181,7 +189,7 @@ public class MazeCreator
         cells = new Cell[Width, Height];
         MarkedArr = new bool[Width, Height];
         // 初始化初始坐标
-        curIndex = new Point(0, 0);
+        curIndex = StartPoint;
         // 访问过的格子栈
         cellStack = new Stack<Point>();
 
@@ -209,7 +217,6 @@ public class MazeCreator
             args(cells);
 
     }
-
 
     private readonly System.Random rand = new System.Random();
 
@@ -259,6 +266,7 @@ public class MazeCreator
         {
             for (int j = 0; j < MarkedArr.GetLength(1); j++)
             {
+                if (!UseCells[i, j]) continue;
                 if (!MarkedArr[i, j]) return false;
             }
         }
@@ -285,6 +293,7 @@ public class MazeCreator
             // 判断越界
             if(targetPIndex.x < 0 || targetPIndex.x >= Width) continue;
             if(targetPIndex.y < 0 || targetPIndex.y >= Height) continue;
+            if (!UseCells[targetPIndex.x, targetPIndex.y]) continue;
             if (!CheckMarked(targetPIndex)) CellForSelect.Add(dirs[q]);
         }
         return CellForSelect;
