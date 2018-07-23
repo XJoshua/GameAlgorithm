@@ -39,7 +39,6 @@ public class MazePathFinder
         searchPoints4Bfs = new Queue<Point>();
         searchPoints4Dfs = new Stack<Point>();
 
-
         CheckCells = cellAction;
         FinishFinding = finishAction;
     }

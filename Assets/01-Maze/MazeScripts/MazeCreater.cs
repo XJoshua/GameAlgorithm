@@ -207,6 +207,7 @@ public class MazeCreator
 
         if (args != null)
             args(cells);
+
     }
 
 

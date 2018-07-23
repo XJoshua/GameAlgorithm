@@ -22,6 +22,7 @@ public class MazeView : MonoBehaviour
 
     public Dictionary<Point, Image> cellDict;
 
+    public Transform InitBtn;
     public Transform BfsBtn;
     public Transform DfsBtn;
     public Transform AstarBtn;
@@ -41,17 +42,49 @@ public class MazeView : MonoBehaviour
 
         // 显示单元设置
         creator.SetLinkAct += ShowCell;
-        //creator.CreatMaze();
-        //creator.CreatMaze(ShowMaze);
+
+    }
+
+    #region ------------------- Btn Events -------------------
+
+    public void OnBfsClick()
+    {
+        finder.FindAlgo = FindAlgo.Bfs;
+        CleanStore();
+        StartCoroutine(finder.Finding_BFS());
+    }
+
+    public void OnDfsClick()
+    {
+        finder.FindAlgo = FindAlgo.Dfs;
+        CleanStore();
+        StartCoroutine(finder.Finding_DFS());
+    }
+
+    public void OnAstarClick()
+    {
+        finder.FindAlgo = FindAlgo.AStar;
+        CleanStore();
+        StartCoroutine(finder.Finding_AStar());
+    }
+
+    // 重新生成迷宫
+    public void OnMazeInit()
+    {
+        StartCreate();
+
         StartCoroutine(creator.CreatMazeWithAnima(ShowMaze));
 
-        FinishCreate();
-
         finder = new MazePathFinder(creator.cells, ShowCheckedCell, ShowPath);
+
+        //FinishCreate();
     }
+
+    #endregion ------------------- Btn Events -------------------
 
     public void ShowMaze(Cell[,] cells)
     {
+        FinishCreate();
         return;
         StartCoroutine(CreatMazeImage(cells));
     }
@@ -149,32 +182,33 @@ public class MazeView : MonoBehaviour
         temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
     }
 
+    private void StartCreate()
+    {
+        MazeImageReset();
+
+        InitBtn.gameObject.SetActive(false);
+        BfsBtn.gameObject.SetActive(false);
+        DfsBtn.gameObject.SetActive(false);
+        AstarBtn.gameObject.SetActive(false);
+    }
+
     public void FinishCreate()
     {
+        InitBtn.gameObject.SetActive(true);
         BfsBtn.gameObject.SetActive(true);
         DfsBtn.gameObject.SetActive(true);
         AstarBtn.gameObject.SetActive(true);
     }
 
-    public void OnBfsClick()
+    public void MazeImageReset()
     {
-        finder.FindAlgo = FindAlgo.Bfs;
-        CleanStore();
-        StartCoroutine(finder.Finding_BFS());
-    }
-
-    public void OnDfsClick()
-    {
-        finder.FindAlgo = FindAlgo.Dfs;
-        CleanStore();
-        StartCoroutine(finder.Finding_DFS());
-    }
-
-    public void OnAstarClick()
-    {
-        finder.FindAlgo = FindAlgo.AStar;
-        CleanStore();
-        StartCoroutine(finder.Finding_AStar());
+        for (int i = 0; i < Width; i++)
+        {
+            for (int j = 0; j < Height; j++)
+            {
+                CellImage[i, j].sprite = CellSprites[0];
+            }
+        }
     }
 
     public void ShowCheckedCell(Point point)
