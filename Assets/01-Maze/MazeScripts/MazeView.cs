@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-//using System.Diagnostics;
-using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MazeView : MonoBehaviour
 {
+    [Header("Cell贴图")]
     public Sprite[] CellSprites;
 
+    [Header("迷宫长宽")]
     public int Width = 200;
     public int Height = 100;
 
+    [Header("单元大小（像素）")]
     public int cellSize = 20;
 
     public Image[,] CellImage;
+
+    [Header("迷宫类型")]
+    public MazeType type;
+
     public Dictionary<Point, Image> CellMarks;
-
-    public Transform CellParent;
-
     public Dictionary<Point, Image> cellDict;
 
+    [Header("UI控件")]
+    public Transform CellParent;
     public Transform InitBtn;
     public Transform BfsBtn;
     public Transform DfsBtn;
     public Transform AstarBtn;
 
     private MazePathFinder finder;
-
     private MazeCreator creator;
 
     public Point StartPoint;
@@ -78,7 +81,10 @@ public class MazeView : MonoBehaviour
     {
         StartCreate();
 
-        ReadImage();
+        if (type == MazeType.X02_ImageBaseMaze)
+        {
+            ReadImage();
+        }
 
         FoundStartAndEnd();
 
@@ -189,7 +195,12 @@ public class MazeView : MonoBehaviour
         }
         temp.SetNativeSize();
         temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
-        temp.color = ColorCells[point.x, point.y];
+
+        if (type == MazeType.X02_ImageBaseMaze)
+        {
+            temp.color = ColorCells[point.x, point.y];
+        }
+        
     }
 
     private void StartCreate()
@@ -360,4 +371,11 @@ public enum WallType
     ThreeWay = 3,
     CrossRoad = 4,
     Corner = 5,
+}
+
+public enum MazeType
+{
+    X01_SimpleMaze,
+    X02_ImageBaseMaze,
+
 }
