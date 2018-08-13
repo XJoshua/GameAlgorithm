@@ -49,12 +49,6 @@ public enum Dir
     Right = 3,
 }
 
-public class Maze
-{
-    public int height;
-    public int width;
-}
-
 public struct Point
 {
     public int x;
@@ -325,5 +319,6 @@ public class MazeCreator
     {
         return x ? 1 : 0;
     }
+
 
 }
