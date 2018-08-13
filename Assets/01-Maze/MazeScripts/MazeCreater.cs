@@ -134,16 +134,18 @@ public class MazeCreator
 
     public Action<Cell, Point> SetLinkAct;
 
+    private readonly bool Base4Image;
+
     // 开始位置和结束位置
     public Point StartPoint;
 
     public Point EndPoint;
 
-    public MazeCreator(int x, int y)
+    public MazeCreator(int x, int y, bool hasImage)
     {
         this.Height = y;
         this.Width = x;
-        //this.UseCells = useCells;
+        this.Base4Image = hasImage;
     }
 
     /// <summary>
@@ -266,7 +268,7 @@ public class MazeCreator
         {
             for (int j = 0; j < MarkedArr.GetLength(1); j++)
             {
-                if (!UseCells[i, j]) continue;
+                if (Base4Image && !UseCells[i, j]) continue;
                 if (!MarkedArr[i, j]) return false;
             }
         }
@@ -293,7 +295,7 @@ public class MazeCreator
             // 判断越界
             if(targetPIndex.x < 0 || targetPIndex.x >= Width) continue;
             if(targetPIndex.y < 0 || targetPIndex.y >= Height) continue;
-            if (!UseCells[targetPIndex.x, targetPIndex.y]) continue;
+            if (Base4Image && !UseCells[targetPIndex.x, targetPIndex.y]) continue;
             if (!CheckMarked(targetPIndex)) CellForSelect.Add(dirs[q]);
         }
         return CellForSelect;

@@ -38,7 +38,7 @@ public class MazeView : MonoBehaviour
     {
         ColorCells = new Color[Width, Height];
 
-        creator = new MazeCreator(Width, Height);
+        creator = new MazeCreator(Width, Height, UseReferImage);
 
         CellImage = new Image[Width, Height];
         CellMarks = new Dictionary<Point, Image>();
@@ -78,9 +78,16 @@ public class MazeView : MonoBehaviour
     {
         StartCreate();
 
-        ReadImage();
-
-        FoundStartAndEnd();
+        if (UseReferImage)
+        {
+            ReadImage();
+            FoundStartAndEnd();
+        }
+        else
+        {
+            creator.StartPoint = new Point(0, 0);
+            creator.EndPoint = new Point(Width - 1, Height - 1);
+        }
 
         StartCoroutine(creator.CreatMazeWithAnima(ShowMaze));
 
@@ -189,7 +196,8 @@ public class MazeView : MonoBehaviour
         }
         temp.SetNativeSize();
         temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
-        temp.color = ColorCells[point.x, point.y];
+        if(UseReferImage)
+            temp.color = ColorCells[point.x, point.y];
     }
 
     private void StartCreate()
@@ -287,6 +295,8 @@ public class MazeView : MonoBehaviour
         }
     }
 
+    public bool UseReferImage;
+
     public Texture2D ReferImage;
 
     public bool[,] UsableCells;
@@ -350,6 +360,17 @@ public class MazeView : MonoBehaviour
 
         Debug.Log("StartPos: " + creator.StartPoint + " | EndPos: " + creator.EndPoint);
     }
+
+
+    public void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Captured");
+            Application.CaptureScreenshot("screen.png", 0);
+        }
+    }
+
 }
 
 public enum WallType
