@@ -34,6 +34,8 @@ public class MazeView : MonoBehaviour
     public Point StartPoint;
     public Point EndPoint;
 
+    public Color CellColor;
+
     void Start()
     {
         ColorCells = new Color[Width, Height];
@@ -140,6 +142,7 @@ public class MazeView : MonoBehaviour
                 temp.sprite = CellSprites[0];
                 temp.SetNativeSize();
                 temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
+                temp.color = CellColor;
             }
         }
     }
@@ -198,6 +201,8 @@ public class MazeView : MonoBehaviour
         temp.transform.localScale = new Vector3(cellSize * 0.1f, cellSize * 0.1f, 0);
         if(UseReferImage)
             temp.color = ColorCells[point.x, point.y];
+        else
+            temp.color = CellColor;
     }
 
     private void StartCreate()
